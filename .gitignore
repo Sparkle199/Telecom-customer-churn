@@ -1,0 +1,17 @@
+# Governance doc (internal reference only, not project content)
+AI_Coding_Governance_MSc.pdf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# Env / secrets
+.env
+
+# OS
+.DS_Store
+Thumbs.db
