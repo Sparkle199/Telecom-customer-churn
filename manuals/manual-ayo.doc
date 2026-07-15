@@ -1,0 +1,110 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat
+{\fonttbl{\f0\fswiss\fcharset0 Calibri;}{\f1\fmodern\fcharset0 Consolas;}}
+{\colortbl ;\red0\green70\blue140;}
+\viewkind4\uc1\pard\sa200\sl276\slmult1\f0\fs22
+\pard\sa300\f0\fs44\b\cf1 Manual: Ayo -- Evaluation and Writeup\b0\cf0\par
+\pard\sa160\f0\fs22 Covers Tasks 8-11 of spec/00-project-roadmap.md. Depends on Paul's trained model(s) and test-set predictions. This is the last stage -- you close out the project.\par
+\pard\sa160\f0\fs22 Relevant skills: test (evaluation), data (interpretation), review (final pass), reflection (closing journal entry).\par
+\pard\sa160\f0\fs22 You can start early: write the evaluation script against placeholder predictions so you're not idle waiting on Paul, then swap in his real model/test_predictions.csv when ready.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Suggested branches\b0\cf0\par
+\pard\sa160\f0\fs22 One branch per task, following the repo's existing feat--<name> convention.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 8 (Evaluation): feat--model-evaluation\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 9 (Interpretation): feat--model-interpretation\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 10 (Writeup): feat--readme-writeup\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 11 (Stretch, Streamlit app): feat--streamlit-app\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--model-evaluation\par
+\pard\li360\sa20\f1\fs19 # ... commit, push, open a PR\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--model-interpretation\par
+\pard\li360\sa20\f1\fs19 # ... commit, push, open a PR\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--readme-writeup\par
+\pard\li360\sa20\f1\fs19 # ... commit, push, open a PR\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--streamlit-app\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 8 -- Evaluation\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Load Paul's saved test predictions and labels.\par
+\pard\li480\fi-240\f0\fs22 2.\tab Report precision/recall/F1 and ROC-AUC -- accuracy alone is misleading given the ~26.5% class imbalance.\par
+\pard\li480\fi-240\f0\fs22 3.\tab State which metric matters most for a retention use case (a missed churner usually costs more than a false alarm) and pick/justify a decision threshold accordingly, rather than defaulting to 0.5.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 import pandas as pd\par
+\pard\li360\sa20\f1\fs19 from sklearn.metrics import (classification_report, roc_auc_score,\par
+\pard\li360\sa20\f1\fs19                               confusion_matrix, RocCurveDisplay)\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 test_proba = pd.read_csv('models/test_predictions.csv', index_col=0)\par
+\pard\li360\sa20\f1\fs19 y_test = pd.read_csv('models/test_labels.csv', index_col=0)\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 y_pred = (test_proba >= 0.5).astype(int)\par
+\pard\li360\sa20\f1\fs19 print(classification_report(y_test, y_pred))\par
+\pard\li360\sa20\f1\fs19 print('ROC-AUC:', roc_auc_score(y_test, test_proba))\par
+\pard\li360\sa20\f1\fs19 print(confusion_matrix(y_test, y_pred))\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 RocCurveDisplay.from_predictions(y_test, test_proba)\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 9 -- Interpretation\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Pull feature importances (or coefficients) from Paul's model.\par
+\pard\li480\fi-240\f0\fs22 2.\tab Translate the top drivers into plain-language retention insights -- e.g. which contract types, services, or tenure ranges are associated with churn.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 import joblib\par
+\pard\li360\sa20\f1\fs19 model = joblib.load('models/best_model.joblib')\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 importances = pd.Series(\par
+\pard\li360\sa20\f1\fs19     model.feature_importances_, index=X_train.columns\par
+\pard\li360\sa20\f1\fs19 ).sort_values(ascending=False)\par
+\pard\li360\sa20\f1\fs19 importances.head(10)\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 # optional, richer explanations:\par
+\pard\li360\sa20\f1\fs19 # pip install shap\par
+\pard\li360\sa20\f1\fs19 # import shap\par
+\pard\li360\sa20\f1\fs19 # explainer = shap.TreeExplainer(model)\par
+\pard\li360\sa20\f1\fs19 # shap_values = explainer.shap_values(X_test)\par
+\pard\li360\sa20\f1\fs19 # shap.summary_plot(shap_values[1], X_test)\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 10 -- Writeup\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Update README.md with the final results (metrics table) and clear steps to reproduce the pipeline end to end.\par
+\pard\li480\fi-240\f0\fs22 2.\tab Do a final review pass over the whole pipeline, not just your own part -- use the review skill.\par
+\pard\li480\fi-240\f0\fs22 3.\tab Add the closing entry to journal/agent-journal.md summarising the project.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 11 -- Stretch (optional): Streamlit app\b0\cf0\par
+\pard\sa160\f0\fs22 Only if time allows. Full design is in spec/01-system-architecture.md -- read that first. The short version: load Paul's saved model_pipeline.joblib once, reuse Mercy's cleaning function directly rather than re-implementing it, and support both a single-customer form and a batch CSV upload through the same code path.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 import streamlit as st\par
+\pard\li360\sa20\f1\fs19 import joblib\par
+\pard\li360\sa20\f1\fs19 import pandas as pd\par
+\pard\li360\sa20\f1\fs19 from src.data.cleaning import clean_raw\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 @st.cache_resource\par
+\pard\li360\sa20\f1\fs19 def load_pipeline():\par
+\pard\li360\sa20\f1\fs19     return joblib.load('models/model_pipeline.joblib')\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 pipeline = load_pipeline()\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 with st.form('customer'):\par
+\pard\li360\sa20\f1\fs19     tenure = st.number_input('Tenure (months)', 0, 72, 12)\par
+\pard\li360\sa20\f1\fs19     contract = st.selectbox(\par
+\pard\li360\sa20\f1\fs19         'Contract', ['Month-to-month', 'One year', 'Two year'])\par
+\pard\li360\sa20\f1\fs19     # ... remaining fields, one widget per raw column\par
+\pard\li360\sa20\f1\fs19     submitted = st.form_submit_button('Predict')\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 if submitted:\par
+\pard\li360\sa20\f1\fs19     raw = pd.DataFrame([\{'tenure': tenure, 'Contract': contract, ...\}])\par
+\pard\li360\sa20\f1\fs19     cleaned = clean_raw(raw)\par
+\pard\li360\sa20\f1\fs19     proba = pipeline.predict_proba(cleaned)[0, 1]\par
+\pard\li360\sa20\f1\fs19     st.metric('Churn probability', f'\{proba:.0%\}')\par
+\pard\sa160\f0\fs22\par
+\pard\sa160\f0\fs22 Deploy via Streamlit Community Cloud: push to GitHub, connect the repo at share.streamlit.io, point it at src/app/streamlit_app.py.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Deliverable\b0\cf0\par
+\pard\li480\fi-240\f0\fs22\bullet\tab An evaluation report (metrics + confusion matrix).\par
+\pard\li480\fi-240\f0\fs22\bullet\tab An interpretation section in plain language.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab An updated README.md.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab A closing entry in journal/agent-journal.md.\par
+\pard\sa160\f0\fs22 See spec/workload-ayo.md for the full task spec.\par
+}

@@ -1,0 +1,86 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat
+{\fonttbl{\f0\fswiss\fcharset0 Calibri;}{\f1\fmodern\fcharset0 Consolas;}}
+{\colortbl ;\red0\green70\blue140;}
+\viewkind4\uc1\pard\sa200\sl276\slmult1\f0\fs22
+\pard\sa300\f0\fs44\b\cf1 Manual: Paul -- Modelling\b0\cf0\par
+\pard\sa160\f0\fs22 Covers Tasks 5-7 of spec/00-project-roadmap.md. Depends on Mercy's cleaned, feature-engineered dataset. Hand off trained model(s) plus test-set predictions to Ayo.\par
+\pard\sa160\f0\fs22 Relevant skills: developer, risk-assessor (confirm split integrity), adversarial-review (probe for overfitting and leakage before trusting a result).\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Suggested branches\b0\cf0\par
+\pard\sa160\f0\fs22 One branch per task, following the repo's existing feat--<name> convention.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 5 (Train/test split): feat--train-test-split\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 6 (Baseline model): feat--baseline-model\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 7 (Model iteration): feat--model-iteration\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--train-test-split\par
+\pard\li360\sa20\f1\fs19 # ... commit, push, open a PR\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--baseline-model\par
+\pard\li360\sa20\f1\fs19 # ... commit, push, open a PR\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--model-iteration\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 5 -- Train/test split\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Split features from the target.\par
+\pard\li480\fi-240\f0\fs22 2.\tab Use a stratified split -- Churn is ~26.5% positive, and a plain random split can distort that ratio in the test set.\par
+\pard\li480\fi-240\f0\fs22 3.\tab Set the test set aside and do not touch it again until Ayo's final evaluation. Ask risk-assessor to confirm there's no leakage between train and test before continuing.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 import pandas as pd\par
+\pard\li360\sa20\f1\fs19 from sklearn.model_selection import train_test_split\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 df = pd.read_csv('data/churn_features.csv')\par
+\pard\li360\sa20\f1\fs19 X = df.drop(columns=['Churn'])\par
+\pard\li360\sa20\f1\fs19 y = df['Churn']\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 X_train, X_test, y_train, y_test = train_test_split(\par
+\pard\li360\sa20\f1\fs19     X, y, test_size=0.2, stratify=y, random_state=42)\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 6 -- Baseline model\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Fit a simple, well-understood model first -- logistic regression -- to set a floor. Anything fancier later must beat this to be worth the extra complexity.\par
+\pard\li480\fi-240\f0\fs22 2.\tab Use class_weight='balanced' given the class imbalance noted in Task 5.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 from sklearn.linear_model import LogisticRegression\par
+\pard\li360\sa20\f1\fs19 from sklearn.preprocessing import StandardScaler\par
+\pard\li360\sa20\f1\fs19 from sklearn.pipeline import Pipeline\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 baseline = Pipeline([\par
+\pard\li360\sa20\f1\fs19     ('scaler', StandardScaler()),\par
+\pard\li360\sa20\f1\fs19     ('clf', LogisticRegression(max_iter=1000, class_weight='balanced')),\par
+\pard\li360\sa20\f1\fs19 ])\par
+\pard\li360\sa20\f1\fs19 baseline.fit(X_train, y_train)\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 7 -- Model iteration\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Try a tree-based/ensemble model, which usually handles mixed categorical/numeric features well without much preprocessing.\par
+\pard\li480\fi-240\f0\fs22 2.\tab Handle imbalance explicitly -- class_weight, threshold tuning, or resampling. Pick one approach and write down why.\par
+\pard\li480\fi-240\f0\fs22 3.\tab Cross-validate rather than relying on a single split.\par
+\pard\li480\fi-240\f0\fs22 4.\tab Before treating any result as final, run adversarial-review: check the train/test performance gap for overfitting, and confirm no feature is quietly encoding the target.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 from sklearn.ensemble import RandomForestClassifier\par
+\pard\li360\sa20\f1\fs19 from sklearn.model_selection import GridSearchCV\par
+\pard\li360\sa20\f1\fs19 import joblib\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 rf = RandomForestClassifier(class_weight='balanced', random_state=42)\par
+\pard\li360\sa20\f1\fs19 param_grid = \{'n_estimators': [200, 400], 'max_depth': [None, 10, 20]\}\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 grid = GridSearchCV(rf, param_grid, scoring='roc_auc', cv=5)\par
+\pard\li360\sa20\f1\fs19 grid.fit(X_train, y_train)\par
+\pard\li360\sa20\f1\fs19 best_model = grid.best_estimator_\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 # save for Ayo\par
+\pard\li360\sa20\f1\fs19 joblib.dump(best_model, 'models/best_model.joblib')\par
+\pard\li360\sa20\f1\fs19 test_proba = best_model.predict_proba(X_test)[:, 1]\par
+\pard\li360\sa20\f1\fs19 pd.Series(test_proba, index=X_test.index).to_csv(\par
+\pard\li360\sa20\f1\fs19     'models/test_predictions.csv')\par
+\pard\li360\sa20\f1\fs19 y_test.to_csv('models/test_labels.csv')\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Deliverable and hand-off\b0\cf0\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Trained model file(s) and saved test-set predictions in models/.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab A short note on split/imbalance-handling decisions.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab A dated entry in journal/agent-journal.md.\par
+\pard\sa160\f0\fs22 See spec/workload-paul.md for the full task spec.\par
+}

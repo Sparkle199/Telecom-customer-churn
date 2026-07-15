@@ -1,0 +1,66 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat
+{\fonttbl{\f0\fswiss\fcharset0 Calibri;}{\f1\fmodern\fcharset0 Consolas;}}
+{\colortbl ;\red0\green70\blue140;}
+\viewkind4\uc1\pard\sa200\sl276\slmult1\f0\fs22
+\pard\sa300\f0\fs44\b\cf1 Manual: Hilary -- Setup and EDA\b0\cf0\par
+\pard\sa160\f0\fs22 Covers Tasks 1-2 of spec/00-project-roadmap.md. You start the pipeline -- nothing to wait on. Hand off a working environment plus an EDA summary to Mercy.\par
+\pard\sa160\f0\fs22 Relevant skills: planner (write the spec before you start), developer (environment setup), data (EDA).\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Suggested branches\b0\cf0\par
+\pard\sa160\f0\fs22 One branch per task, following the repo's existing feat--<name> convention (see feat--EDA, feat--documentation).\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 1 (Environment & structure): feat--project-setup\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 2 (EDA): feat--eda\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--project-setup\par
+\pard\li360\sa20\f1\fs19 # ... requirements.txt, folder layout, commit, push, open a PR\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--eda\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 1 -- Environment and structure\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Create and activate a virtual environment.\par
+\pard\li480\fi-240\f0\fs22 2.\tab Install the shared package set and freeze it to requirements.txt so everyone has the same versions.\par
+\pard\li480\fi-240\f0\fs22 3.\tab Agree the folder layout with the team (see master manual section 3) and create the folders so they exist from day one.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 python -m venv .venv\par
+\pard\li360\sa20\f1\fs19 .venv\\Scripts\\activate\par
+\pard\li360\sa20\f1\fs19 pip install pandas numpy scikit-learn matplotlib seaborn jupyter joblib\par
+\pard\li360\sa20\f1\fs19 pip freeze > requirements.txt\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 2 -- EDA\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Load the CSV and check its shape, dtypes, and first few rows.\par
+\pard\li480\fi-240\f0\fs22 2.\tab Check for missing/blank values column by column -- note that TotalCharges is a string column with blanks, not NaN, so a plain isnull() will miss them.\par
+\pard\li480\fi-240\f0\fs22 3.\tab Check the target balance -- this determines how the whole team handles evaluation later.\par
+\pard\li480\fi-240\f0\fs22 4.\tab Look at how each feature group (services, account info, demographics) relates to churn.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 import pandas as pd\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 df = pd.read_csv('WA_Fn-UseC_-Telco-Customer-Churn.csv')\par
+\pard\li360\sa20\f1\fs19 df.shape\par
+\pard\li360\sa20\f1\fs19 df.info()\par
+\pard\li360\sa20\f1\fs19 df.head()\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 # blanks in TotalCharges hide as whitespace strings, not NaN:\par
+\pard\li360\sa20\f1\fs19 (df['TotalCharges'].str.strip() == '').sum()\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 # target balance -- expect roughly 73/27\par
+\pard\li360\sa20\f1\fs19 df['Churn'].value_counts(normalize=True)\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 import seaborn as sns\par
+\pard\li360\sa20\f1\fs19 import matplotlib.pyplot as plt\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 sns.histplot(data=df, x='tenure', hue='Churn', multiple='stack')\par
+\pard\li360\sa20\f1\fs19 plt.show()\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 sns.countplot(data=df, x='Contract', hue='Churn')\par
+\pard\li360\sa20\f1\fs19 plt.show()\par
+\pard\sa160\f0\fs22\par
+\pard\sa160\f0\fs22 Write findings into an EDA notebook or short markdown summary. Flag anything odd (like the TotalCharges blanks) for Mercy to fix -- don't fix it yourself, that's her task.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Deliverable and hand-off\b0\cf0\par
+\pard\li480\fi-240\f0\fs22\bullet\tab requirements.txt and the agreed folder layout, committed.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab An EDA notebook/script plus a short written summary of what the data looks like and any quirks found.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab A dated entry in journal/agent-journal.md.\par
+\pard\sa160\f0\fs22 See spec/workload-hilary.md for the full task spec.\par
+}
