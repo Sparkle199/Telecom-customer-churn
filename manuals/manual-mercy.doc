@@ -1,0 +1,72 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat
+{\fonttbl{\f0\fswiss\fcharset0 Calibri;}{\f1\fmodern\fcharset0 Consolas;}}
+{\colortbl ;\red0\green70\blue140;}
+\viewkind4\uc1\pard\sa200\sl276\slmult1\f0\fs22
+\pard\sa300\f0\fs44\b\cf1 Manual: Mercy -- Cleaning and Feature Engineering\b0\cf0\par
+\pard\sa160\f0\fs22 Covers Tasks 3-4 of spec/00-project-roadmap.md. Depends on Hilary's EDA summary. Hand off a clean, feature-engineered dataset plus a documented decision log to Paul.\par
+\pard\sa160\f0\fs22 Relevant skills: developer, risk-assessor (get sign-off on anything that touches potential data leakage).\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Suggested branches\b0\cf0\par
+\pard\sa160\f0\fs22 One branch per task, following the repo's existing feat--<name> convention.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 3 (Cleaning): feat--data-cleaning\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Task 4 (Feature engineering): feat--feature-engineering\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--data-cleaning\par
+\pard\li360\sa20\f1\fs19 # ... commit, push, open a PR\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 git checkout main && git pull\par
+\pard\li360\sa20\f1\fs19 git checkout -b feat--feature-engineering\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 3 -- Cleaning\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Convert TotalCharges from text to numeric. Coercing invalid parsing to NaN will surface the 11 blank rows.\par
+\pard\li480\fi-240\f0\fs22 2.\tab Inspect those 11 rows -- they should all be new customers with tenure == 0. Decide how to handle them (filling with 0 is defensible since they haven't been billed yet) and write the reasoning down.\par
+\pard\li480\fi-240\f0\fs22 3.\tab Collapse 'No internet service' / 'No phone service' values to a plain 'No' in the relevant columns, so the model sees a simple Yes/No signal rather than three near-duplicate categories. Document that this was done.\par
+\pard\li480\fi-240\f0\fs22 4.\tab Drop customerID -- it is a unique identifier, not a feature, and must not reach the model.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 import pandas as pd\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 df = pd.read_csv('WA_Fn-UseC_-Telco-Customer-Churn.csv')\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')\par
+\pard\li360\sa20\f1\fs19 blanks = df[df['TotalCharges'].isna()]\par
+\pard\li360\sa20\f1\fs19 blanks[['tenure', 'MonthlyCharges', 'TotalCharges']]\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 # all tenure == 0 -> no billing history yet, fill with 0\par
+\pard\li360\sa20\f1\fs19 df['TotalCharges'] = df['TotalCharges'].fillna(0)\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 collapse_cols = ['MultipleLines', 'OnlineSecurity', 'OnlineBackup',\par
+\pard\li360\sa20\f1\fs19                  'DeviceProtection', 'TechSupport', 'StreamingTV',\par
+\pard\li360\sa20\f1\fs19                  'StreamingMovies']\par
+\pard\li360\sa20\f1\fs19 df[collapse_cols] = df[collapse_cols].replace(\par
+\pard\li360\sa20\f1\fs19     \{'No internet service': 'No', 'No phone service': 'No'\})\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 df = df.drop(columns=['customerID'])\par
+\pard\sa160\f0\fs22\par
+\pard\sa160\f0\fs22 Ask risk-assessor to sign off before moving on -- the leakage-relevant call here is making sure customerID and nothing derived from the outcome ends up in the feature set.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Task 4 -- Feature engineering\b0\cf0\par
+\pard\sa160\f0\fs22 Steps:\par
+\pard\li480\fi-240\f0\fs22 1.\tab Encode the target as 0/1.\par
+\pard\li480\fi-240\f0\fs22 2.\tab One-hot encode the remaining categorical columns.\par
+\pard\li480\fi-240\f0\fs22 3.\tab Optionally add a tenure-bucket feature -- Paul can compare with/without it during model iteration.\par
+\pard\li480\fi-240\f0\fs22 4.\tab Decide on scaling: note it here, but leave the actual scaler fit to Paul (Task 5/6) since it must be fit on the training split only, never on the full dataset.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 df['Churn'] = df['Churn'].map(\{'Yes': 1, 'No': 0\})\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 cat_cols = df.select_dtypes(include='object').columns\par
+\pard\li360\sa20\f1\fs19 df = pd.get_dummies(df, columns=cat_cols, drop_first=True)\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 # optional tenure bucket\par
+\pard\li360\sa20\f1\fs19 df['tenure_bucket'] = pd.cut(\par
+\pard\li360\sa20\f1\fs19     df['tenure'], bins=[-1, 12, 24, 48, 72],\par
+\pard\li360\sa20\f1\fs19     labels=['0-12', '13-24', '25-48', '49-72'])\par
+\pard\li360\sa20\f1\fs19 df = pd.get_dummies(df, columns=['tenure_bucket'], drop_first=True)\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 df.to_csv('data/churn_features.csv', index=False)\par
+\pard\sa160\f0\fs22\par
+\pard\sb320\sa200\f0\fs32\b\cf1 Deliverable and hand-off\b0\cf0\par
+\pard\li480\fi-240\f0\fs22\bullet\tab A clean, feature-engineered dataset (or a reusable script that produces it) saved for Paul to load.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab A short note listing every cleaning/encoding decision and why.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab A dated entry in journal/agent-journal.md.\par
+\pard\sa160\f0\fs22 See spec/workload-mercy.md for the full task spec.\par
+}

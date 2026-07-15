@@ -1,0 +1,41 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat
+{\fonttbl{\f0\fswiss\fcharset0 Calibri;}{\f1\fmodern\fcharset0 Consolas;}}
+{\colortbl ;\red0\green70\blue140;}
+\viewkind4\uc1\pard\sa200\sl276\slmult1\f0\fs22
+\pard\sa300\f0\fs44\b\cf1 Telecom Customer Churn -- Project Manual\b0\cf0\par
+\pard\sa160\f0\fs22 Master manual. Read this first, then open your own manual for step-by-step instructions on your tasks.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 1. Project overview\b0\cf0\par
+\pard\sa160\f0\fs22 Goal: go from the raw Telco churn CSV to a documented, evaluated churn model with insights that could inform a retention program.\par
+\pard\sa160\f0\fs22 Dataset: WA_Fn-UseC_-Telco-Customer-Churn.csv -- 7,043 customers, 21 columns, target column Churn (~26.5% Yes). See dataset-details.txt for the source and context.\par
+\pard\sa160\f0\fs22 Full plan: spec/00-project-roadmap.md. This manual explains HOW to do each task in that roadmap; the roadmap explains WHAT and WHY.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 2. Team and task ownership\b0\cf0\par
+\pard\sa160\f0\fs22 The 11 roadmap tasks are split into a pipeline. Each person hands off a concrete artefact to the next -- no one starts from scratch.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Hilary -- Setup & EDA (Tasks 1-2). Manual: manuals/manual-hilary.doc\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Mercy -- Cleaning & Feature Engineering (Tasks 3-4). Manual: manuals/manual-mercy.doc\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Paul -- Modelling: split, baseline, iteration (Tasks 5-7). Manual: manuals/manual-paul.doc\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Ayo -- Evaluation, Interpretation & Writeup (Tasks 8-11). Manual: manuals/manual-ayo.doc\par
+\pard\sa160\f0\fs22 Detailed ownership and hand-off notes for each person are in spec/workload-<name>.md.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 3. Shared environment setup\b0\cf0\par
+\pard\sa160\f0\fs22 Everyone works from the same environment so code runs on every machine without changes.\par
+\pard\sa40\sb80\li360\f1\fs19\cf1\b CODE HINT\b0\cf0\par
+\pard\li360\sa20\f1\fs19 python -m venv .venv\par
+\pard\li360\sa20\f1\fs19 # Windows:\par
+\pard\li360\sa20\f1\fs19 .venv\\Scripts\\activate\par
+\pard\li360\sa20\f1\fs19 # macOS/Linux:\par
+\pard\li360\sa20\f1\fs19 source .venv/bin/activate\par
+\pard\li360\sa20\f1\fs19 \par
+\pard\li360\sa20\f1\fs19 pip install pandas numpy scikit-learn matplotlib seaborn jupyter joblib\par
+\pard\li360\sa20\f1\fs19 pip freeze > requirements.txt\par
+\pard\sa160\f0\fs22\par
+\pard\sa160\f0\fs22 Suggested layout: notebooks/ or src/ for code, data/ for any derived/intermediate files (raw CSV stays at repo root), models/ for saved model files, spec/ for specs, journal/ for the agent journal.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 4. Workflow conventions\b0\cf0\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Spec first: before non-trivial work, write or update a short spec in spec/ (use spec/TEMPLATE.md).\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Journal as you go: add a short, dated entry to journal/agent-journal.md after each significant task -- what happened, what you were unsure about, what you assumed.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Skills: this project uses Claude Code skills under .claude/skills/ (planner, developer, test, review, reflection, risk-assessor, adversarial-review, data). Each manual notes which ones are relevant to that person's tasks.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Git: one feature branch per task, small commits with clear messages, push and open a PR when a task is done. Suggested branch names follow the repo's existing feat--<name> convention (see feat--EDA, feat--documentation) and are listed in each person's manual.\par
+\pard\sb320\sa200\f0\fs32\b\cf1 5. Success criteria (project-wide)\b0\cf0\par
+\pard\li480\fi-240\f0\fs22\bullet\tab A pipeline from raw CSV to trained model that runs top to bottom without manual patching.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Evaluation reported with precision/recall/F1 and ROC-AUC per class, not just accuracy.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab A short written interpretation of what drives churn and what it implies for retention.\par
+\pard\li480\fi-240\f0\fs22\bullet\tab Journal entries covering every phase.\par
+}

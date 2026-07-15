@@ -4,9 +4,6 @@ AI_Coding_Governance_MSc.pdf
 # Dataset source notes (internal reference only, not project content)
 dataset-details.txt
 
-# Generated developer manuals (internal reference only, not project content)
-manuals/
-
 # Per-developer workload assignments (internal reference only, not project content)
 spec/workload-*.md
 
